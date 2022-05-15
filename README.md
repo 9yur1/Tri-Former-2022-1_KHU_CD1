@@ -12,12 +12,12 @@
 > #### __./Tri-Former_ver1__
 > : `Tri-Decomposition block` 적용
 seasonal, trend, residual의 3가지 input data로 나눴고,
-`trend`, `residual`에 `Auto-correlation block` 추가. (현재 Error 있음.)
+`trend`, `residual`에 `Auto-correlation block` 추가.
 
 > #### __./Tri-Former_ver2__
 > : `Tri-Decomposition block` 적용
 seasonal, trend, residual의 3가지 input data로 나눴고,
-`residual`에만 `Auto-correlation block` 추가함. (현재 Error 있음.)
+`residual`에만 `Auto-correlation block` 추가함.
 
 > #### __./Tri-Former_ver3__
 > : `Tri-Decomposition block` 적용

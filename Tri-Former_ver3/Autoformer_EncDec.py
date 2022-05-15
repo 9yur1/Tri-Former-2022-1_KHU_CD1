@@ -192,37 +192,41 @@ class DecoderLayer(nn.Module):
         ### Trend Auto-Correlation
         
         trend = trend + self.dropout(self.cross_attention(
-            trend, trend1, trend1,
+            trend, trend1, trend1,    # 여기 수정
             attn_mask= None
         )[0])
 
+        
         trend = trend + self.dropout(self.cross_attention(
             trend, trend2, trend2,
             attn_mask= None
         )[0])
-
+        
+        '''
         trend = trend + self.dropout(self.cross_attention(
             trend, trend3, trend3,
             attn_mask= None
         )[0])
+        '''
 
+        '''     
         ### Noise Auto-Correlation
-        
         noise = noise + self.dropout(self.cross_attention(
-            noise, noise1, noise1,
+            noise, noise1, noise1,    # 여기 수정
             attn_mask= None
         )[0])
-
+        
         noise = noise + self.dropout(self.cross_attention(
             noise, noise2, noise2,
             attn_mask= None
         )[0])
-
+        
+        
         noise = noise + self.dropout(self.cross_attention(
             noise, noise3, noise3,
             attn_mask= None
         )[0])
-        
+        '''
 
         # 마지막 projection
         residual_trend = trend1 + trend2 + trend3

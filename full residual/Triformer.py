@@ -7,7 +7,7 @@ from layers.Triformer_EncDec import Encoder, Decoder, EncoderLayer, DecoderLayer
 import math
 import numpy as np
 
-import os
+
 class Model(nn.Module):
     """
     Tri-former is the first method to achieve the series-wise connection,
@@ -74,26 +74,6 @@ class Model(nn.Module):
             projection=nn.Linear(configs.d_model, configs.c_out, bias=True)
         )
 
-    def decomp_print(self,trend,seasonal,noise,pred,pred_len):
-         # result save
-        
-        folder_path = './graphs/24/' 
-        if not os.path.exists(folder_path):
-            os.makedirs(folder_path)
-        trends =[]
-        trends.append(trend[:, -pred_len:, :].detach().cpu().numpy())
-        seasonals =[]
-        seasonals.append(seasonal[:, -pred_len:, :].detach().cpu().numpy())
-        noises =[]
-        noises.append(noise[:, -pred_len:, :].detach().cpu().numpy())
-        preds =[]
-        preds.append(pred[:, -pred_len:, :].detach().cpu().numpy())
-
-        np.save(folder_path + 'trend.npy', trends)
-        np.save(folder_path + 'seasonal.npy', seasonals)
-        np.save(folder_path + 'noise.npy', noises)
-        np.save(folder_path + 'pred.npy', preds)
-
     def forward(self, x_enc, x_mark_enc, x_dec, x_mark_dec,
                 enc_self_mask=None, dec_self_mask=None, dec_enc_mask=None):
         # decomp init
@@ -111,10 +91,9 @@ class Model(nn.Module):
         enc_out, attns = self.encoder(enc_out, attn_mask=enc_self_mask)
         # dec
         dec_out = self.dec_embedding(seasonal_init, x_mark_dec)    
-        seasonal_part, trend_part, noise_part = self.decoder(dec_out, enc_out, x_mask=dec_self_mask, cross_mask=dec_enc_mask,
+        seasonal_part, trend_part, _ = self.decoder(dec_out, enc_out, x_mask=dec_self_mask, cross_mask=dec_enc_mask,
                                                  trend=trend_init, noise=noise_init) 
         # final
-        #dec_out = trend_part + seasonal_part + noise_part
         dec_out = trend_part + seasonal_part + noise_true
 
         #data save
@@ -125,6 +104,3 @@ class Model(nn.Module):
         else:
             return dec_out[:, -self.pred_len:, :]  # [B, L, D]
 
-        """
-        trend_init = self.dec_embedding(trend_init, x_mark_dec)
-        """

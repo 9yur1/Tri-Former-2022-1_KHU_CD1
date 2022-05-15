@@ -152,10 +152,11 @@ class DecoderLayer(nn.Module):
         ### Trend Auto-Correlation
         
         trend = trend + self.dropout(self.cross_attention(
-            trend, trend1, trend1,
+            trend, trend, trend,
             attn_mask= None
         )[0])
 
+        '''
         trend = trend + self.dropout(self.cross_attention(
             trend, trend2, trend2,
             attn_mask= None
@@ -166,6 +167,7 @@ class DecoderLayer(nn.Module):
             attn_mask= None
         )[0])
         # 여기까지
+        '''
 
         residual_trend = trend1 + trend2 + trend3
         residual_trend = self.projection(residual_trend.permute(0, 2, 1)).transpose(1, 2)

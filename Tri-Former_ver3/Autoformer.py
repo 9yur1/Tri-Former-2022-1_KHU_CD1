@@ -1,6 +1,3 @@
-# Tri-Former 전체구조
-# Seasonal, Trend, Noise 3가지 input data로 분리 후, trend와 noise에 autocorrelation block 추가
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

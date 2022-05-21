@@ -100,8 +100,7 @@ class Model(nn.Module):
         mean = torch.mean(x_enc, dim=1).unsqueeze(1).repeat(1, self.pred_len, 1)      
         zeros = torch.zeros([x_dec.shape[0], self.pred_len, x_dec.shape[2]], device=x_enc.device) 
         seasonal_init, trend_init, noise_init = self.decomp(x_enc)
-        
-        noise_true = torch.cat([noise_init[:, -self.label_len:, :], noise_init[:, -self.pred_len:, :]], dim=1)
+
         # decoder input
         trend_init = torch.cat([trend_init[:, -self.label_len:, :], mean], dim=1)
         seasonal_init = torch.cat([seasonal_init[:, -self.label_len:, :], zeros], dim=1)
@@ -115,7 +114,6 @@ class Model(nn.Module):
                                                  trend=trend_init, noise=noise_init) 
         # final
         dec_out = trend_part + seasonal_part + noise_part
-        #dec_out = trend_part + seasonal_part + noise_true
 
         #data save
         self.decomp_print(trend_part, seasonal_part, noise_part, dec_out, self.pred_len)
@@ -125,6 +123,3 @@ class Model(nn.Module):
         else:
             return dec_out[:, -self.pred_len:, :]  # [B, L, D]
 
-        """
-        trend_init = self.dec_embedding(trend_init, x_mark_dec)
-        """

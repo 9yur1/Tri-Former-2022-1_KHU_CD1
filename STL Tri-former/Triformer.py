@@ -118,7 +118,7 @@ class Model(nn.Module):
         #dec_out = trend_part + seasonal_part + noise_true
 
         #data save
-        self.decomp_print(trend_part, seasonal_part, noise_true, dec_out, self.pred_len)
+        #self.decomp_print(trend_part, seasonal_part, noise_true, dec_out, self.pred_len)
 
         if self.output_attention:
             return dec_out[:, -self.pred_len:, :], attns

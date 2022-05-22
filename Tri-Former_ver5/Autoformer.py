@@ -1,5 +1,4 @@
-# Tri-Former 전체구조
-# Seasonal, Trend, Noise 3가지 input data로 분리 후, trend와 noise에 autocorrelation block 추가
+# Tri-Decomp 사용, trend랑 noise에 autocorrelation 추가 X
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -91,10 +90,7 @@ class Model(nn.Module):
         enc_out = self.enc_embedding(x_enc, x_mark_enc)
         enc_out, attns = self.encoder(enc_out, attn_mask=enc_self_mask)
         # dec
-        dec_out = self.dec_embedding(seasonal_init, x_mark_dec)
-        trend_init = self.dec_embedding(trend_init, x_mark_dec)
-        noise_init = self.dec_embedding(noise_init, x_mark_dec)
-
+        dec_out = self.dec_embedding(seasonal_init, x_mark_dec)   
         seasonal_part, trend_part, noise_part = self.decoder(dec_out, enc_out, x_mask=dec_self_mask, cross_mask=dec_enc_mask,
                                                  trend=trend_init, noise=noise_init)
         # final

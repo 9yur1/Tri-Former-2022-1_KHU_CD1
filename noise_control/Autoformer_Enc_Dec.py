@@ -1,3 +1,4 @@
+# noise에 encoder 구조 그대로 추가하고 dec_out에 noise_part추가함.
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -69,12 +70,12 @@ class seasonal_decomp(nn.Module):
 
         return x
 
-class series_decomp(nn.Module):
+class tri_decomp(nn.Module):
     """
-    Series decomposition block
+    Tri Series decomposition block
     """
     def __init__(self, kernel_size):
-        super(series_decomp, self).__init__()
+        super(tri_decomp, self).__init__()
         self.moving_avg = moving_avg(kernel_size, stride=1)
         self.seasonal_decomp = seasonal_decomp(kernel_size, period=8)  
 
@@ -84,6 +85,20 @@ class series_decomp(nn.Module):
         noise = x - moving_mean -seasonal
 
         return seasonal, moving_mean, noise
+
+class series_decomp(nn.Module):
+    """
+    Series decomposition block
+    """
+    def __init__(self, kernel_size):
+        super(series_decomp, self).__init__()
+        self.moving_avg = moving_avg(kernel_size, stride=1)
+
+    def forward(self, x):
+        moving_mean = self.moving_avg(x)
+        res = x - moving_mean
+        noise = res-res
+        return res, moving_mean, noise
 
 
 class EncoderLayer(nn.Module):
@@ -102,10 +117,12 @@ class EncoderLayer(nn.Module):
         self.activation = F.relu if activation == "relu" else F.gelu
 
     def forward(self, x, attn_mask=None):
+        
         new_x, attn = self.attention(
             x, x, x,
             attn_mask=attn_mask
         )
+        
         x = x + self.dropout(new_x)
         x, _, _ = self.decomp1(x)
         y = x
@@ -113,6 +130,7 @@ class EncoderLayer(nn.Module):
         y = self.dropout(self.conv2(y).transpose(-1, 1))
         res, _, _ = self.decomp2(x + y)
         return res, attn
+
 
 
 class Encoder(nn.Module):
@@ -160,12 +178,14 @@ class DecoderLayer(nn.Module):
         self.decomp1 = series_decomp(moving_avg)
         self.decomp2 = series_decomp(moving_avg)
         self.decomp3 = series_decomp(moving_avg)
+        self.decomp4 = series_decomp(moving_avg) #noise decomp block
+        self.decomp5 = series_decomp(moving_avg) #noise decomp block
         self.dropout = nn.Dropout(dropout)
         self.projection = nn.Conv1d(in_channels=d_model, out_channels=c_out, kernel_size=3, stride=1, padding=1,
                                     padding_mode='circular', bias=False)
         self.activation = F.relu if activation == "relu" else F.gelu
 
-    def forward(self, x, cross, x_mask=None, cross_mask=None, trend=None):
+    def forward(self, x, cross, x_mask=None, cross_mask=None, trend=None, noise=None):
         x = x + self.dropout(self.self_attention(
             x, x, x,
             attn_mask=x_mask
@@ -183,14 +203,33 @@ class DecoderLayer(nn.Module):
         y = self.dropout(self.conv2(y).transpose(-1, 1))
 
         x, trend3, noise3 = self.decomp3(x + y)
-
+        
+        # noise autocorrelation & series decomp block
+        
+        noise = noise + self.dropout(self.self_attention(
+            noise, noise, noise,
+            attn_mask=x_mask
+        )[0])
+        
+        noise, trend4, noise4 = self.decomp4(noise)
+        
+        # noise feed-foward block
+        z = noise
+        z = self.dropout(self.activation(self.conv1(z.transpose(-1, 1))))
+        z = self.dropout(self.conv2(z).transpose(-1, 1))
+        
+        
+        # noise decomp block
+        noise, trend5, noise5 = self.decomp5(z)
+        
+        
         residual_trend = trend1 + trend2 + trend3
         residual_trend = self.projection(residual_trend.permute(0, 2, 1)).transpose(1, 2)
 
-        residual_noise = noise1 + noise2 + noise3
-        residual_noise = self.projection(residual_noise.permute(0, 2, 1)).transpose(1, 2)
+        residual_noise = noise  # noise로 변경
 
-        return x, residual_trend, residual_noise
+
+        return x, residual_trend, noise
 
 
 class Decoder(nn.Module):
@@ -206,10 +245,14 @@ class Decoder(nn.Module):
     def forward(self, x, cross, x_mask=None, cross_mask=None, trend=None, noise=None):
         
         for layer in self.layers:
-            x, residual_trend, residual_noise = layer(x, cross, x_mask=x_mask, cross_mask=cross_mask, trend=trend) 
-    
+            x, residual_trend, residual_noise = layer(x, cross, x_mask=x_mask, cross_mask=cross_mask, trend=trend, noise=noise) # noise 추가
+
+            # noise 추가
+            noise = self.norm(noise)
+            noise = self.projection(noise)
+ 
             trend = trend + residual_trend
-            noise = noise + residual_noise
+            # noise = noise + residual_noise
 
         if self.norm is not None:
             x = self.norm(x)

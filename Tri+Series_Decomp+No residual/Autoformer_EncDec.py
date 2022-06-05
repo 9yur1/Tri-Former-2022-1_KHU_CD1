@@ -69,12 +69,12 @@ class seasonal_decomp(nn.Module):
 
         return x
 
-class series_decomp(nn.Module):
+class tri_decomp(nn.Module):
     """
-    Series decomposition block
+    Tri Series decomposition block
     """
     def __init__(self, kernel_size):
-        super(series_decomp, self).__init__()
+        super(tri_decomp, self).__init__()
         self.moving_avg = moving_avg(kernel_size, stride=1)
         self.seasonal_decomp = seasonal_decomp(kernel_size, period=8)  
 
@@ -84,6 +84,20 @@ class series_decomp(nn.Module):
         noise = x - moving_mean -seasonal
 
         return seasonal, moving_mean, noise
+
+class series_decomp(nn.Module):
+    """
+    Series decomposition block
+    """
+    def __init__(self, kernel_size):
+        super(series_decomp, self).__init__()
+        self.moving_avg = moving_avg(kernel_size, stride=1)
+
+    def forward(self, x):
+        moving_mean = self.moving_avg(x)
+        res = x - moving_mean
+        noise = res-res
+        return res, moving_mean, noise
 
 
 class EncoderLayer(nn.Module):

@@ -1,15 +1,15 @@
-# Tri-Former 전체구조
-# Seasonal, Trend, Noise 3가지 input data로 분리 후, trend와 noise에 autocorrelation block 추가
+# noise에 encoder 구조 그대로 추가하고 dec_out에 noise_part추가함.
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from layers.Embed import DataEmbedding, DataEmbedding_wo_pos
 from layers.AutoCorrelation import AutoCorrelation, AutoCorrelationLayer
-from layers.Autoformer_EncDec import Encoder, Decoder, EncoderLayer, DecoderLayer, my_Layernorm, series_decomp
+from layers.Autoformer_EncDec import Encoder, Decoder, EncoderLayer, DecoderLayer, my_Layernorm, series_decomp, tri_decomp
 import math
 import numpy as np
 
-
+import os
 class Model(nn.Module):
     """
     Tri-former is the first method to achieve the series-wise connection,
@@ -24,7 +24,7 @@ class Model(nn.Module):
 
         # Decomp
         kernel_size = configs.moving_avg
-        self.decomp = series_decomp(kernel_size)
+        self.decomp = tri_decomp(kernel_size)
 
         # Embedding
         # The series-wise connection inherently contains the sequential information.
@@ -82,7 +82,7 @@ class Model(nn.Module):
         mean = torch.mean(x_enc, dim=1).unsqueeze(1).repeat(1, self.pred_len, 1)      
         zeros = torch.zeros([x_dec.shape[0], self.pred_len, x_dec.shape[2]], device=x_enc.device) 
         seasonal_init, trend_init, noise_init = self.decomp(x_enc)
-     
+
         # decoder input
         trend_init = torch.cat([trend_init[:, -self.label_len:, :], mean], dim=1)
         seasonal_init = torch.cat([seasonal_init[:, -self.label_len:, :], zeros], dim=1)
@@ -92,12 +92,10 @@ class Model(nn.Module):
         enc_out, attns = self.encoder(enc_out, attn_mask=enc_self_mask)
         # dec
         dec_out = self.dec_embedding(seasonal_init, x_mark_dec)
-        # trend_init = self.dec_embedding(trend_init, x_mark_dec)
-        # noise_init = self.dec_embedding(noise_init, x_mark_dec)
-        # 값 임베딩 부분
+        noise_init = self.dec_embedding(noise_init, x_mark_dec) #decoder에 noise 추가
 
         seasonal_part, trend_part, noise_part = self.decoder(dec_out, enc_out, x_mask=dec_self_mask, cross_mask=dec_enc_mask,
-                                                 trend=trend_init, noise=noise_init)
+                                                 trend=trend_init, noise=noise_init) 
         # final
         dec_out = trend_part + seasonal_part + noise_part
 

@@ -1,0 +1,4 @@
+여기 파일들은
+기존 Autoformer의 코드에서 오직 trend의 autocorrelation block만 추가한 것.
+
+input data는 seasonal과  trend 2가지.

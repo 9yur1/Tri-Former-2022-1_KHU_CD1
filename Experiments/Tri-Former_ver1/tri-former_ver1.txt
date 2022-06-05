@@ -1,0 +1,5 @@
+Tri-Former ver1
+새로운 Decomposition block을 적용하여
+seasonal, trend, residual의 3가지 input data로 나눴고,
+trend와 residual에도 autocorrelation block 추가함.
+그러나 성능은 기존 Autoformer 대비 좋지 않음.

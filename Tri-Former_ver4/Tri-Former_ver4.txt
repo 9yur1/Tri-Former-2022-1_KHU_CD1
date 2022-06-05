@@ -1,0 +1,2 @@
+# Tri-Former (Trend & noise Auto-correlation 없는 ver)
+Tri-Decomp block을 이용해서  seasonal, trend, noise로 분리함.

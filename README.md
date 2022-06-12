@@ -48,5 +48,5 @@ bash ./scripts/ILI_script/Autoformer.sh
 
 ## Contact
 
-김유민 heyday2036@khu.ac.kr
+김유민 heyday2036@khu.ac.kr  
 박규리 kyuri0924@khu.ac.kr

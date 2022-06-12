@@ -9,7 +9,7 @@ Transformer는 Self-attention mechanism의 장점을 통해 순차적 데이터�
 <div align="center"><img src="./Image/Tri-former.png" width="100%" height="100%"></div>
 Tri-former의 최종 Architecture
 
-<div align="center"><img src="./Image/Tri-Decomp.png" width="100%" height="100%"></div>
+<div align="center"><img src="./Image/Tri-Decomp.png" width="60%" height="60%"></div>
 Tri-Decomp diagram
 
 ## Getting started
@@ -27,7 +27,7 @@ bash ./scripts/ILI_script/Autoformer.sh
 
 ## Main Results
 -----------------
-<div align="center"><img src="./Image/result.png" width="100%" height="100%"></div>
+<div align="center"><img src="./Image/result.png" width="80%" height="80%"></div>
 
 
 ## Contributing

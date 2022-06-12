@@ -1,29 +1,46 @@
+# Tri-Former
 ## KHU 2022-1학기 캡스톤 디자인1 
-### [2pm] Tri-Former
 -------------
-### Folder Description
+## About the Project
+Transformer는 Self-attention mechanism의 장점을 통해 순차적 데이터에 대한 Long-term dependency를 모델링하는데 큰 이점을 얻는다. 그러나 복잡한 시간적 패턴에 가려져 Dependency의 정확한 추론이 어렵고 Quadratic한 복잡도를 가지므로 Long-term 환경에서는 예측이 어렵다. 이에 본 논문에서는 Time-series data에 적합한 구조로 더 정확한 학습과 높은 Computation efficiency를 위해 Autoformer model에 기반을 두고, 입력신호를 3가지 신호로 분리하는 Decomposition Block을 활용하고 AutoCorrelation block의 구조를 바꾼 새로운 모델인 “Tri-Former”을 설계한다.
 
-> #### __./Autoformer_original__ 
-> : 기존 autoformer code
+## Architecture
+-----------------
+<div align="center"><img src="./Image/Tri-former.png" width="100%" height="100%"></div>
+Tri-former의 최종 Architecture
 
-> #### __./Add trend auto_correlation__ 
-> : 기존 autoformer + `trend`의 `Auto-correlation block` 3개 추가
+<div align="center"><img src="./Image/Tri-Decomp.png" width="100%" height="100%"></div>
+Tri-Decomp diagram
 
-> #### __./Tri-Former_ver1__
-> : `Tri-Decomposition block` 적용
-seasonal, trend, residual의 3가지 input data로 나눴고,
-`trend`, `residual`에 `Auto-correlation block` 추가.
+## Getting started
+-------------------
+1. Install Python 3.6, PyTorch 1.9.0.
+2. Download data. You can obtain all the six benchmarks from Tsinghua Cloud or Google Drive. All the datasets are well pre-processed and can be used easily.
+3. Train the model. We provide the experiment scripts of all benchmarks under the folder `./scripts`. You can reproduce the experiment results by:
+> bash ./scripts/ETT_script/Autoformer_ETTm1.sh
+bash ./scripts/ECL_script/Autoformer.sh
+bash ./scripts/Exchange_script/Autoformer.sh
+bash ./scripts/Traffic_script/Autoformer.sh
+bash ./scripts/Weather_script/Autoformer.sh
+bash ./scripts/ILI_script/Autoformer.sh
 
-> #### __./Tri-Former_ver2__
-> : `Tri-Decomposition block` 적용
-seasonal, trend, residual의 3가지 input data로 나눴고,
-`residual`에만 `Auto-correlation block` 추가함.
 
-> #### __./Tri-Former_ver3__
-> : `Tri-Decomposition block` 적용
-seasonal, trend, residual의 3가지 input data로 나눴고,
-`trend`와 `noise`에 `Auto-correlation block` 추가
+## Main Results
+-----------------
+<div align="center"><img src="./Image/result.png" width="100%" height="100%"></div>
 
-> #### __./Tri-Former_ver4__
-> : `Tri-Decomposition block` 적용
-Trend & noise `Auto-correlation` 없는 ver
+
+## Contributing
+-----------------
+
+1. Fork the project repository
+2. Create your branch (git checkout feature/name)
+3. Make changes and commit (git commit -m "Input your commit contents")
+4. Push to your own Gibhub repository (git push origin feature/name)
+5. Create a pull request
+
+
+## Contact
+------------------
+김유민 heyday2036@khu.ac.kr
+박규리 kyuri0924@khu.ac.kr

@@ -7,10 +7,10 @@ Transformer는 Self-attention mechanism의 장점을 통해 순차적 데이터�
 ## Architecture
 -----------------
 <div align="center"><img src="./Image/Tri-former.png" width="100%" height="100%"></div>
-Tri-former의 최종 Architecture
+### Tri-former의 최종 Architecture  
 
 <div align="center"><img src="./Image/Tri-Decomp.png" width="60%" height="60%"></div>
-Tri-Decomp diagram
+### Tri-Decomp diagram  
 
 ## Getting started
 -------------------

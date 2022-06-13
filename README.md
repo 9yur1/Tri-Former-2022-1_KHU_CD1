@@ -33,7 +33,10 @@ bash ./scripts/ILI_script/Triformer.sh
 
 ## Main Results
 
-<div align="center"><img src="./Image/result.png" width="80%" height="80%"></div>
+<div align="center"><img src="./Image/result.png" width="60%" height="60%"></div>
+
+### Triformer와 Autoformer 성능 비교
+#### Exchange data (input length:96, prediction length:96)
 
 
 ## Contributing

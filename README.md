@@ -23,12 +23,12 @@ Transformer는 Self-attention mechanism의 장점을 통해 순차적 데이터�
 2. Download data. You can obtain all the six benchmarks from Tsinghua Cloud or Google Drive. All the datasets are well pre-processed and can be used easily.
 3. Train the model. We provide the experiment scripts of all benchmarks under the folder `./scripts`. You can reproduce the experiment results by:
 ```
-bash ./scripts/ETT_script/Autoformer_ETTm1.sh  
-bash ./scripts/ECL_script/Autoformer.sh  
-bash ./scripts/Exchange_script/Autoformer.sh  
-bash ./scripts/Traffic_script/Autoformer.sh  
-bash ./scripts/Weather_script/Autoformer.sh  
-bash ./scripts/ILI_script/Autoformer.sh  
+bash ./scripts/ETT_script/Triformer_ETTm1.sh  
+bash ./scripts/ECL_script/Triformer.sh  
+bash ./scripts/Exchange_script/Triformer.sh  
+bash ./scripts/Traffic_script/Triformer.sh  
+bash ./scripts/Weather_script/Triformer.sh  
+bash ./scripts/ILI_script/Triformer.sh  
 ```
 
 ## Main Results
